@@ -27,7 +27,11 @@ export default function ProjectManager() {
   const classes = useStyles();
   const theme = useTheme();
   
-  const [rows, setRows] = useState([createData("Caroline Courtney", "11/02/29", "E-Commerce", "N/A", "N/A", "N/A", "N/A", "$1500")]);
+  const [rows, setRows] = useState([
+    createData("Caroline Courtney", "11/02/29", "E-Commerce", "N/A", "N/A", "N/A", "N/A", "$1500"),
+    createData("Bill Gates", "10/27/19", "Custom Software", "GPS, Push Notifications, Users/Authentication, File Transfer", "Medium", "Web Application", "0-10", "$1600"),
+    createData("Steve Jobs", "02/13/19", "Custom Software", "Photo/Video, File Transfer, Users/Authentication", "Low", "Web Application", "10-100", "$1250")
+  ]);
 
   const [websiteChecked, setWebsiteChecked] = useState(false);
   const [iOSChecked, setIOSChecked] = useState(false);
@@ -94,37 +98,37 @@ export default function ProjectManager() {
         />
       </FormGroup>
     </Grid>
-    <Grid item container justify="flex-end" style={{marginTop: "5em"}}>
+    <Grid item container justifyContent="flex-end" style={{marginTop: "5em"}}>
       <Grid item style={{marginRight: 75}}>
         <FilterListIcon color="secondary" style={{fontSize: 50}} />
       </Grid>
     </Grid>
-    <Grid item>
-      <TableContainer component={Paper}>
+    <Grid item style={{marginBottom: "15em"}}>
+      <TableContainer component={Paper} elevation={0}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Service</TableCell>
-              <TableCell>Features</TableCell>
-              <TableCell>Complexity</TableCell>
-              <TableCell>Platforms</TableCell>
-              <TableCell>Users</TableCell>
-              <TableCell>Total</TableCell>
+              <TableCell align="center">Name</TableCell>
+              <TableCell align="center">Date</TableCell>
+              <TableCell align="center">Service</TableCell>
+              <TableCell align="center">Features</TableCell>
+              <TableCell align="center">Complexity</TableCell>
+              <TableCell align="center">Platforms</TableCell>
+              <TableCell align="center">Users</TableCell>
+              <TableCell align="center">Total</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row, index) => 
               <TableRow key={index}>
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.date}</TableCell>
-                <TableCell>{row.service}</TableCell>
-                <TableCell>{row.features}</TableCell>
-                <TableCell>{row.complexity}</TableCell>
-                <TableCell>{row.platforms}</TableCell>
-                <TableCell>{row.users}</TableCell>
-                <TableCell>{row.total}</TableCell>
+                <TableCell align="center">{row.name}</TableCell>
+                <TableCell align="center">{row.date}</TableCell>
+                <TableCell align="center">{row.service}</TableCell>
+                <TableCell align="center" style={{maxWidth: "5em"}}>{row.features}</TableCell>
+                <TableCell align="center">{row.complexity}</TableCell>
+                <TableCell align="center">{row.platforms}</TableCell>
+                <TableCell align="center">{row.users}</TableCell>
+                <TableCell align="center">{row.total}</TableCell>
               </TableRow>
             )}
           </TableBody>
