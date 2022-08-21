@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core';
 import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider } from '@emotion/react';
-import theme from '../src/ui/theme';
+import theme from '../src/ui/Theme';
 import createEmotionCache from '../src/createEmotionCache';
 import Header from '../src/ui/Header';
 import Footer from '../src/ui/Footer'
