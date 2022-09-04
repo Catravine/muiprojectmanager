@@ -127,6 +127,13 @@ export default createTheme({
         borderColor: arcBlue,
         borderWidth: 2
       }
+    },
+    MuiSvgIcon: {
+      root: {
+        "&.MuiSelect-icon": {
+          fill: arcOrange
+        }
+      }
     }
   }
 });

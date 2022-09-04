@@ -22,6 +22,8 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import DateFnsUtils from '@date-io/date-fns';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = makeStyles(theme =>({
   service: {
@@ -46,6 +48,9 @@ export default function ProjectManager() {
     createData("Steve Jobs", "02/13/19", "Custom Software", "Photo/Video, File Transfer, Users/Authentication", "Low", "Web Application", "10-100", "$1250")
   ]);
 
+  const platformOptions = ["Web", "iOS", "Android"];
+  const featureOptions = ["Photo/Video", "GPS", "File Transfer", "Users/Authentication", "Biometrics", "Push Notifications"]
+
   const [websiteChecked, setWebsiteChecked] = useState(false);
   const [iOSChecked, setIOSChecked] = useState(false);
   const [androidChecked, setAndroidChecked] = useState(false);
@@ -57,6 +62,8 @@ export default function ProjectManager() {
   const [service, setService] = useState('');
   const [complexity, setComplexity] = useState('');
   const [users, setUsers] = useState('');
+  const [platforms, setPlatforms] = useState([]);
+  const [features, setFeatures] = useState([])
   
   return <MuiPickersUtilsProvider utils={DateFnsUtils}>
     <Grid container direction="column">
@@ -197,6 +204,27 @@ export default function ProjectManager() {
                       <FormControlLabel classes={{label: classes.service}} value="Custom Software" label="Custom Software" control={<Radio />} />
                     </RadioGroup>
                   </Grid>
+                  <Grid item style={{marginTop: "5em"}}>
+                    <Select 
+                      style={{width: "12em"}}
+                      labelId="platforms" 
+                      id="platforms" 
+                      multiple 
+                      displayEmpty
+                      renderValue={platforms.length > 0 ? undefined : () => "Platforms"}
+                      value={platforms} 
+                      onChange={event => setPlatforms(event.target.value)}
+                    >
+                      {platformOptions.map(option => 
+                        <MenuItem 
+                          key={option} 
+                          value={option}
+                        >
+                          {option}
+                        </MenuItem>
+                      )}
+                    </Select>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -231,7 +259,7 @@ export default function ProjectManager() {
               </Grid>
             </Grid>
             <Grid item>
-              <Grid item container direction="column" sm alignItems="flex-end">
+              <Grid item container direction="column" sm>
                 <Grid item>
                   <TextField 
                     InputProps={{startAdornment: 
@@ -244,7 +272,13 @@ export default function ProjectManager() {
                   />
                 </Grid>
                 <Grid item>
-                  <Grid item container direction="column" style={{marginTop: "5em"}}>
+                  <Grid 
+                    item 
+                    container 
+                    direction="column" 
+                    style={{marginTop: "5em"}}
+                    alignItems="flex-end"
+                  >
                     <Grid item>
                       <Typography variant="h4">Users</Typography>
                     </Grid>
@@ -259,6 +293,28 @@ export default function ProjectManager() {
                         <FormControlLabel classes={{label: classes.service, root: classes.users}} value="10-100" label="10-100" control={<Radio />} />
                         <FormControlLabel classes={{label: classes.service, root: classes.users}} value="100+" label="100+" control={<Radio />} />
                       </RadioGroup>
+                    </Grid>
+                    <Grid item style={{marginTop: "5em"}}>
+                      <Select 
+                        MenuProps={{ style: {zIndex: 1302}}}
+                        labelId="features" 
+                        id="features" 
+                        style={{width: "12em"}}
+                        multiple 
+                        displayEmpty
+                        renderValue={features.length > 0 ? undefined : () => "Features"}
+                        value={features} 
+                        onChange={event => setFeatures(event.target.value)}
+                      >
+                        {featureOptions.map(option => 
+                          <MenuItem 
+                            key={option} 
+                            value={option}
+                          >
+                            {option}
+                          </MenuItem>
+                        )}
+                      </Select>
                     </Grid>
                   </Grid>
                 </Grid>
