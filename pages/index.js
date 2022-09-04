@@ -45,8 +45,8 @@ const useStyles = makeStyles(theme =>({
   }
 }));
 
-function createData(name, date, service, features, complexity, platforms, users, total) {
-  return { name, date, service, features, complexity, platforms, users, total }
+function createData(name, date, service, features, complexity, platforms, users, total, search) {
+  return { name, date, service, features, complexity, platforms, users, total, search }
 }
 
 export default function ProjectManager() {
@@ -54,13 +54,14 @@ export default function ProjectManager() {
   const theme = useTheme();
   
   const [rows, setRows] = useState([
-    createData("Caroline Courtney", "11/02/29", "E-Commerce", "N/A", "N/A", "N/A", "N/A", "$1500"),
-    createData("Bill Gates", "10/27/19", "Custom Software", "GPS, Push Notifications, Users/Authentication, File Transfer", "Medium", "Web Application", "0-10", "$1600"),
-    createData("Steve Jobs", "02/13/19", "Custom Software", "Photo/Video, File Transfer, Users/Authentication", "Low", "Web Application", "10-100", "$1250")
+    createData("Caroline Courtney", "11/02/29", "E-Commerce", "N/A", "N/A", "N/A", "N/A", "$1500", true),
+    createData("Bill Gates", "10/27/19", "Custom Software", "GPS, Push Notifications, Users/Authentication, File Transfer", "Medium", "Web Application", "0-10", "$1600", true),
+    createData("Steve Jobs", "02/13/19", "Custom Software", "Photo/Video, File Transfer, Users/Authentication", "Low", "Web Application", "10-100", "$1250", true)
   ]);
 
   const platformOptions = ["Web", "iOS", "Android"];
-  const featureOptions = ["Photo/Video", "GPS", "File Transfer", "Users/Authentication", "Biometrics", "Push Notifications"]
+  var featureOptions = ["Photo/Video", "GPS", "File Transfer", "Users/Authentication", "Biometrics", "Push Notifications"]
+  var websiteOptions = ["Basic", "Interactive", "E-Commerce"]
 
   const [websiteChecked, setWebsiteChecked] = useState(false);
   const [iOSChecked, setIOSChecked] = useState(false);
@@ -74,7 +75,8 @@ export default function ProjectManager() {
   const [complexity, setComplexity] = useState('');
   const [users, setUsers] = useState('');
   const [platforms, setPlatforms] = useState([]);
-  const [features, setFeatures] = useState([])
+  const [features, setFeatures] = useState([]);
+  const [search, setSearch] = useState('');
 
   const addProject = () => {
     setRows([...rows, createData(
@@ -82,10 +84,11 @@ export default function ProjectManager() {
       format(date, "MM/dd/yyyy"), 
       service, 
       features.join(", "), 
-      complexity, 
-      platforms.join(", "), 
-      users, 
-      '$' + total
+      service === "Website" ? "N/A" : complexity, 
+      service === "Website" ? "N/A" : platforms.join(", "), 
+      service === "Website" ? "N/A" : users, 
+      `$${total}`,
+      true
     )]);
     setDialogOpen(false);
     setName('');
@@ -98,6 +101,17 @@ export default function ProjectManager() {
     setFeatures([]);
   }
   
+  const handleSearch = event => {
+    setSearch(event.target.value);
+    const rowData = rows.map(row => Object.values(row).filter(option => option !== true && option !== false));
+    const matches = rowData.map(row => row.map(option => 
+      option.toLowerCase().includes(event.target.value.toLowerCase())
+    ));
+    const newRows = [...rows]
+    matches.map((row, index) => row.includes(true) ? newRows[index].search = true : newRows[index].search = false)
+    setRows(newRows);
+  }
+
   return <MuiPickersUtilsProvider utils={DateFnsUtils}>
     <Grid container direction="column">
       <Grid item style={{marginTop: "2em", marginLeft: "5em"}}>
@@ -106,6 +120,8 @@ export default function ProjectManager() {
       <Grid item>
         <TextField 
           placeholder = "Search Project Details or create a new entry."
+          value={search}
+          onChange={handleSearch}
           style={{width: "35em", marginLeft: "5em"}} 
           InputProps={{
             endAdornment: 
@@ -184,7 +200,7 @@ export default function ProjectManager() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row, index) => 
+              {rows.filter(row => row.search).map((row, index) => 
                 <TableRow key={index}>
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">{row.date}</TableCell>
@@ -230,7 +246,10 @@ export default function ProjectManager() {
                       aria-label="service" 
                       name="service" 
                       value={service} 
-                      onChange={event => setService(event.target.value)}
+                      onChange={event => { 
+                        setService(event.target.value); 
+                        setFeatures([]); 
+                      }}
                     >
                       <FormControlLabel classes={{label: classes.service}} value="Website" label="Website" control={<Radio />} />
                       <FormControlLabel classes={{label: classes.service}} value="Mobile App" label="Mobile App" control={<Radio />} />
@@ -240,6 +259,7 @@ export default function ProjectManager() {
                   <Grid item style={{marginTop: "5em"}}>
                     <Select 
                       style={{width: "12em"}}
+                      disabled={service === "Website"} 
                       labelId="platforms" 
                       id="platforms" 
                       multiple 
@@ -282,9 +302,9 @@ export default function ProjectManager() {
                         value={complexity} 
                         onChange={event => setComplexity(event.target.value)}
                       >
-                        <FormControlLabel classes={{label: classes.service}} value="Low" label="Low" control={<Radio />} />
-                        <FormControlLabel classes={{label: classes.service}} value="Medium" label="Medium" control={<Radio />} />
-                        <FormControlLabel classes={{label: classes.service}} value="High" label="High" control={<Radio />} />
+                        <FormControlLabel disabled={service === "Website"} classes={{label: classes.service}} value="Low" label="Low" control={<Radio />} />
+                        <FormControlLabel disabled={service === "Website"} classes={{label: classes.service}} value="Medium" label="Medium" control={<Radio />} />
+                        <FormControlLabel disabled={service === "Website"} classes={{label: classes.service}} value="High" label="High" control={<Radio />} />
                       </RadioGroup>
                     </Grid>
                   </Grid>
@@ -321,9 +341,9 @@ export default function ProjectManager() {
                         value={users} 
                         onChange={event => setUsers(event.target.value)}
                       >
-                        <FormControlLabel classes={{label: classes.service, root: classes.users}} value="0-10" label="0-10" control={<Radio />} />
-                        <FormControlLabel classes={{label: classes.service, root: classes.users}} value="10-100" label="10-100" control={<Radio />} />
-                        <FormControlLabel classes={{label: classes.service, root: classes.users}} value="100+" label="100+" control={<Radio />} />
+                        <FormControlLabel disabled={service === "Website"} classes={{label: classes.service, root: classes.users}} value="0-10" label="0-10" control={<Radio />} />
+                        <FormControlLabel disabled={service === "Website"} classes={{label: classes.service, root: classes.users}} value="10-100" label="10-100" control={<Radio />} />
+                        <FormControlLabel disabled={service === "Website"} classes={{label: classes.service, root: classes.users}} value="100+" label="100+" control={<Radio />} />
                       </RadioGroup>
                     </Grid>
                   </Grid>
@@ -340,6 +360,7 @@ export default function ProjectManager() {
                     value={features} 
                     onChange={event => setFeatures(event.target.value)}
                   >
+                    {service === "Website" ? featureOptions = websiteOptions : null}
                     {featureOptions.map(option => 
                       <MenuItem 
                         key={option} 
@@ -370,7 +391,7 @@ export default function ProjectManager() {
                 onClick={addProject}
                 disabled={
                   service === "Website" ? 
-                    name.length === 0 || total.length === 0 || features.length === 0 
+                    name.length === 0 || total.length === 0 || features.length === 0 || features.length > 1
                   : 
                     name.length === 0 || total.length === 0 || features.length === 0 || 
                     users.length === 0 || complexity.length === 0 || platforms.length === 0 || 
