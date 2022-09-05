@@ -183,7 +183,7 @@ export default function ProjectManager() {
         </FormGroup>
       </Grid>
       <Grid item style={{marginBottom: "15em", marginTop: "5em"}}>
-        <EnhancedTable rows={rows} page={page} setPage={setPage} />
+        <EnhancedTable rows={rows} page={page} setPage={setPage} setRows={setRows} />
       </Grid>
       <Dialog fullWidth maxWidth="md" open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <Grid container justifyContent="center">

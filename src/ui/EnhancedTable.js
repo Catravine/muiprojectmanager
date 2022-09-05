@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -16,10 +16,10 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import SnackBar from '@material-ui/core/SnackBar';
+import Button from '@material-ui/core/Button';
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -138,6 +138,27 @@ const useToolbarStyles = makeStyles((theme) => ({
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { numSelected } = props;
+  const [undo, setUndo] = useState([]);
+  const [alert, setAlert] = useState({open: false, color: "#ff3232", message: "Row Deleted"});
+
+  const onDelete = () => {
+    const newRows = [...props.rows];
+    const selectedRows = newRows.filter(row => props.selected.includes(row.name))
+    selectedRows.map(row => row.search = false);
+    props.setRows(newRows);
+    setUndo(selectedRows)
+    props.setSelected([]);
+    setAlert({...alert, open: true})
+  }
+
+  const onUndo = () => {
+    setAlert({...alert, open: false});
+    const newRows = [...props.rows];
+    const redo = [...undo];
+    redo.map(row => row.search = true);
+    Array.prototype.push.apply(newRows, ...redo);
+    props.setRows(newRows)
+  }
 
   return (
     <Toolbar
@@ -153,7 +174,7 @@ const EnhancedTableToolbar = (props) => {
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton aria-label="delete">
+          <IconButton aria-label="delete" onClick={onDelete}>
             <DeleteIcon style={{fontSize: 30}} color="primary"/>
           </IconButton>
         </Tooltip>
@@ -164,6 +185,25 @@ const EnhancedTableToolbar = (props) => {
           </IconButton>
         </Tooltip>
       )}
+      <SnackBar
+        open={alert.open}
+        ContentProps={{
+          style: {
+            backgroundColor: alert.color
+          }
+        }}
+        anchorOrigin={{vertical: "top", horizontal: "center"}}
+        message={alert.message}
+        onClose={(event, reason) => {
+          if (reason === "clickaway") {
+            setAlert({...alert, open: false});
+            const newRows = [...props.rows];
+            const names = [...undo.map(row => row.name)];
+            props.setRows(newRows.filter(row => !names.includes(row.name)));
+          }
+        }}
+        action={<Button style={{color: "#fff"}} onClick={onUndo}>Undo</Button>}
+      />
     </Toolbar>
   );
 };
@@ -252,7 +292,14 @@ export default function EnhancedTable(props) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper} elevation={0}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar 
+          rows={props.rows} 
+          setRows={props.setRows}
+          numSelected={selected.length} 
+          selected={selected} 
+          setSelected={setSelected}
+
+        />
         <TableContainer>
           <Table
             className={classes.table}
