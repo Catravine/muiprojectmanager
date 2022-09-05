@@ -20,6 +20,10 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import SnackBar from '@material-ui/core/SnackBar';
 import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -133,6 +137,22 @@ const useToolbarStyles = makeStyles((theme) => ({
   title: {
     flex: '1 1 100%',
   },
+  menu: {
+    "&:hover": {
+      backgroundColor: "#fff"
+    },
+    "&.Mui-focusVisible": {
+      backgroundColor: "#fff"
+    }
+  },
+  totalFilter: {
+    fontSize: "2rem",
+    color: theme.palette.common.orange
+  },
+  dollarSign: {
+    fontSize: "1.5rem",
+    color: theme.palette.common.orange
+  }
 }));
 
 const EnhancedTableToolbar = (props) => {
@@ -140,6 +160,20 @@ const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
   const [undo, setUndo] = useState([]);
   const [alert, setAlert] = useState({open: false, color: "#ff3232", message: "Row Deleted"});
+  const [anchorElement, setAnchorElement] = useState(null);
+  const [totalFilter, setTotalFilter] = useState('>');
+  const [openMenu, setOpenMenu] = useState(false);
+  const [filterPrice, setFilterPrice] = useState('');
+
+  const handleClick = e => {
+    setAnchorElement(e.currentTarget);
+    setOpenMenu(true);
+  }
+
+  const handleClose = e => {
+    setAnchorElement(null);
+    setOpenMenu(false);
+  }
 
   const onDelete = () => {
     const newRows = [...props.rows];
@@ -158,6 +192,35 @@ const EnhancedTableToolbar = (props) => {
     redo.map(row => row.search = true);
     Array.prototype.push.apply(newRows, ...redo);
     props.setRows(newRows)
+  }
+
+  const handleTotalFilter = (event) => {
+    setFilterPrice(event.target.value);
+    if (event.target.value !== '') {
+      const newRows = [...props.rows];
+      newRows.map(row => eval(`
+        ${event.target.value} 
+        ${totalFilter === "=" ? "===" : totalFilter} 
+        ${row.total.slice(1, row.total.length)}`) ?
+          row.search = true : row.search = false);
+      props.setRows(newRows);
+    } else {
+      const newRows = [...props.rows];
+      newRows.map(row => row.search = true);
+      props.setRows(newRows);
+    }
+  }
+
+  const filterChange = (operator) => {
+    if (filterPrice !== '') {
+      const newRows = [...props.rows];
+      newRows.map(row => eval(`
+        ${filterPrice} 
+        ${operator === "=" ? "===" : operator} 
+        ${row.total.slice(1, row.total.length)}`) ?
+          row.search = true : row.search = false);
+      props.setRows(newRows);
+    }
   }
 
   return (
@@ -180,7 +243,7 @@ const EnhancedTableToolbar = (props) => {
         </Tooltip>
       ) : (
         <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
+          <IconButton aria-label="filter list" onClick={handleClick}>
             <FilterListIcon style={{fontSize: 50}} color="secondary" />
           </IconButton>
         </Tooltip>
@@ -204,6 +267,46 @@ const EnhancedTableToolbar = (props) => {
         }}
         action={<Button style={{color: "#fff"}} onClick={onUndo}>Undo</Button>}
       />
+      <Menu
+        id="Simple-menu"
+        anchorElement={anchorElement}
+        open={openMenu}
+        onClose={handleClose}
+        elevation={0}
+        style={{zIndex:1302}}
+        keepMounted
+      >
+        <MenuItem classes={{root: classes.menu}}>
+          <TextField 
+            placeholder='Enter a price to filter'
+            value={filterPrice}
+            onChange={handleTotalFilter}
+            InputProps={{
+              type: "number", 
+              startAdornment: 
+                <InputAdornment position="start">
+                  <span className={classes.dollarSign}>$</span>
+                </InputAdornment>,
+              endAdornment: 
+                <InputAdornment onClick={() => {
+                      setTotalFilter(totalFilter === '>' 
+                        ? '<' : totalFilter === '<' 
+                        ? '=' : '>')
+                      filterChange(
+                        totalFilter === '>' 
+                        ? '<' : totalFilter === '<' 
+                        ? '=' : '>'
+                      )
+                    }
+                  } position="end" style={{cursor: "pointer"}}>
+                  <span className={classes.totalFilter}>
+                    {totalFilter}
+                  </span>
+                </InputAdornment>
+              }
+            }/>
+        </MenuItem>
+      </Menu>
     </Toolbar>
   );
 };
