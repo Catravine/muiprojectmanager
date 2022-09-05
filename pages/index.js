@@ -8,14 +8,6 @@ import AddIcon from '@material-ui/icons/Add';
 import Switch from '@material-ui/core/Switch';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import FilterListIcon from '@material-ui/icons/FilterList';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -55,9 +47,9 @@ export default function ProjectManager() {
   const theme = useTheme();
   
   const [rows, setRows] = useState([
-    createData("Caroline Courtney", "11/02/29", "E-Commerce", "N/A", "N/A", "N/A", "N/A", "$1500", true),
+    createData("Caroline Courtney", "11/02/29", "Website", "N/A", "N/A", "N/A", "N/A", "$1500", true),
     createData("Bill Gates", "10/27/19", "Custom Software", "GPS, Push Notifications, Users/Authentication, File Transfer", "Medium", "Web Application", "0-10", "$1600", true),
-    createData("Steve Jobs", "02/13/19", "Custom Software", "Photo/Video, File Transfer, Users/Authentication", "Low", "Web Application", "10-100", "$1250", true)
+    createData("Steve Jobs", "02/13/19", "Custom Software", "Photo/Video, File Transfer, Users/Authentication", "Low", "Website, Android", "10-100", "$1250", true)
   ]);
 
   const platformOptions = ["Web", "iOS", "Android"];
@@ -183,7 +175,16 @@ export default function ProjectManager() {
         </FormGroup>
       </Grid>
       <Grid item style={{marginBottom: "15em", marginTop: "5em"}}>
-        <EnhancedTable rows={rows} page={page} setPage={setPage} setRows={setRows} />
+        <EnhancedTable 
+          rows={rows} 
+          page={page} 
+          setPage={setPage} 
+          setRows={setRows} 
+          websiteChecked={websiteChecked}
+          iOSChecked={iOSChecked}
+          androidChecked={androidChecked}
+          softwareChecked={softwareChecked}
+        />
       </Grid>
       <Dialog fullWidth maxWidth="md" open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <Grid container justifyContent="center">
